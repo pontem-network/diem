@@ -510,10 +510,10 @@ pub fn convert_changeset_and_events_cached<C: AccessPathCache>(
 
     let events = events
         .into_iter()
-        .map(|(guid, seq_num, ty_tag, blob)| {
+        .map(|(guid, seq_num, ty_tag, blob, caller)| {
             let key = EventKey::try_from(guid.as_slice())
                 .map_err(|_| VMStatus::Error(StatusCode::EVENT_KEY_MISMATCH))?;
-            Ok(ContractEvent::new(key, seq_num, ty_tag, blob))
+            Ok(ContractEvent::with_caller(key, seq_num, ty_tag, blob, caller))
         })
         .collect::<Result<Vec<_>, VMStatus>>()?;
 
