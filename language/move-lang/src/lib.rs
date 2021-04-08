@@ -17,7 +17,7 @@ pub mod ir_translation;
 pub mod naming;
 pub mod parser;
 pub mod shared;
-mod to_bytecode;
+pub mod to_bytecode;
 pub mod typing;
 
 use anyhow::anyhow;
@@ -813,7 +813,7 @@ pub fn find_filenames<Predicate: FnMut(&Path) -> bool>(
 }
 
 // TODO replace with some sort of intern table
-fn leak_str(s: &str) -> &'static str {
+pub fn leak_str(s: &str) -> &'static str {
     Box::leak(Box::new(s.to_owned()))
 }
 
@@ -1074,7 +1074,7 @@ fn strip_comments(fname: &'static str, input: &str) -> Result<(String, FileComme
 
 // We restrict strings to only ascii visual characters (0x20 <= c <= 0x7E) or a permitted newline
 // character--\n--or a tab--\t.
-fn strip_comments_and_verify(
+pub fn strip_comments_and_verify(
     fname: &'static str,
     string: &str,
 ) -> Result<(String, FileCommentMap), Errors> {

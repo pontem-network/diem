@@ -29,7 +29,7 @@ use vm::{
 };
 
 /// An instantiation of the MoveVM.
-pub(crate) struct VMRuntime {
+pub struct VMRuntime {
     loader: Loader,
 }
 
@@ -42,7 +42,7 @@ fn is_signer_reference(s: &Type) -> bool {
 }
 
 impl VMRuntime {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         VMRuntime {
             loader: Loader::new(),
         }

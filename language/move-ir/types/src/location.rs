@@ -1,7 +1,7 @@
 // Copyright (c) The Diem Core Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-use codespan::Span;
+pub use codespan::Span;
 use serde::{Deserialize, Serialize};
 use std::{
     cmp::Ordering,
@@ -15,8 +15,8 @@ use std::{
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Serialize, Deserialize)]
 pub struct Loc {
-    file: &'static str,
-    span: Span,
+    pub file: &'static str,
+    pub span: Span,
 }
 impl Loc {
     pub fn new(file: &'static str, span: Span) -> Loc {

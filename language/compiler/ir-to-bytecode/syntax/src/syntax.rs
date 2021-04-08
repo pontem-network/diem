@@ -2136,6 +2136,6 @@ pub fn parse_script_or_module_string(
 }
 
 // TODO replace with some sort of intern table
-fn leak_str(s: &str) -> &'static str {
+pub fn leak_str(s: &str) -> &'static str {
     Box::leak(Box::new(s.to_owned()))
 }

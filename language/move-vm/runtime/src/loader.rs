@@ -71,7 +71,7 @@ where
 // A script cache is a map from the hash value of a script and the `Script` itself.
 // Script are added in the cache once verified and so getting a script out the cache
 // does not require further verification (except for parameters and type parameters)
-struct ScriptCache {
+pub struct ScriptCache {
     scripts: BinaryCache<HashValue, Script>,
 }
 
@@ -415,14 +415,14 @@ impl ModuleCache {
 // entities. Each cache is protected by a `Mutex`. Operation in the Loader must be thread safe
 // (operating on values on the stack) and when cache needs updating the mutex must be taken.
 // The `pub(crate)` API is what a Loader offers to the runtime.
-pub(crate) struct Loader {
-    scripts: Mutex<ScriptCache>,
-    module_cache: Mutex<ModuleCache>,
-    type_cache: Mutex<TypeCache>,
+pub struct Loader {
+    pub scripts: Mutex<ScriptCache>,
+    pub module_cache: Mutex<ModuleCache>,
+    pub type_cache: Mutex<TypeCache>,
 }
 
 impl Loader {
-    pub(crate) fn new() -> Self {
+    pub fn new() -> Self {
         //println!("new loader");
         Self {
             scripts: Mutex::new(ScriptCache::new()),
@@ -757,7 +757,7 @@ impl Loader {
     // Helpers for loading and verification
     //
 
-    fn load_type(
+    pub fn load_type(
         &self,
         type_tag: &TypeTag,
         data_store: &mut impl DataStore,
@@ -1732,7 +1732,7 @@ impl StructInfo {
     }
 }
 
-pub(crate) struct TypeCache {
+pub struct TypeCache {
     structs: HashMap<usize, HashMap<Vec<Type>, StructInfo>>,
 }
 
@@ -1747,7 +1747,7 @@ impl TypeCache {
 const VALUE_DEPTH_MAX: usize = 256;
 
 impl Loader {
-    fn struct_gidx_to_type_tag(&self, gidx: usize, ty_args: &[Type]) -> PartialVMResult<StructTag> {
+    pub fn struct_gidx_to_type_tag(&self, gidx: usize, ty_args: &[Type]) -> PartialVMResult<StructTag> {
         if let Some(struct_map) = self.type_cache.lock().structs.get(&gidx) {
             if let Some(struct_info) = struct_map.get(ty_args) {
                 if let Some(struct_tag) = &struct_info.struct_tag {
@@ -1780,7 +1780,7 @@ impl Loader {
         Ok(struct_tag)
     }
 
-    fn type_to_type_tag_impl(&self, ty: &Type) -> PartialVMResult<TypeTag> {
+    pub fn type_to_type_tag_impl(&self, ty: &Type) -> PartialVMResult<TypeTag> {
         Ok(match ty {
             Type::Bool => TypeTag::Bool,
             Type::U8 => TypeTag::U8,
@@ -1802,7 +1802,7 @@ impl Loader {
         })
     }
 
-    fn struct_gidx_to_type_layout(
+    pub fn struct_gidx_to_type_layout(
         &self,
         gidx: usize,
         ty_args: &[Type],
@@ -1840,7 +1840,7 @@ impl Loader {
         Ok(struct_layout)
     }
 
-    fn type_to_type_layout_impl(&self, ty: &Type, depth: usize) -> PartialVMResult<MoveTypeLayout> {
+    pub fn type_to_type_layout_impl(&self, ty: &Type, depth: usize) -> PartialVMResult<MoveTypeLayout> {
         if depth > VALUE_DEPTH_MAX {
             return Err(PartialVMError::new(StatusCode::VM_MAX_VALUE_DEPTH_REACHED));
         }
@@ -1869,10 +1869,10 @@ impl Loader {
         })
     }
 
-    pub(crate) fn type_to_type_tag(&self, ty: &Type) -> PartialVMResult<TypeTag> {
+    pub fn type_to_type_tag(&self, ty: &Type) -> PartialVMResult<TypeTag> {
         self.type_to_type_tag_impl(ty)
     }
-    pub(crate) fn type_to_type_layout(&self, ty: &Type) -> PartialVMResult<MoveTypeLayout> {
+    pub fn type_to_type_layout(&self, ty: &Type) -> PartialVMResult<MoveTypeLayout> {
         self.type_to_type_layout_impl(ty, 1)
     }
 }
