@@ -2335,6 +2335,7 @@ dependencies = [
  "diem-crypto",
  "diem-crypto-derive",
  "diem-workspace-hack",
+ "enum-iterator",
  "hex",
  "itertools 0.10.0",
  "mirai-annotations",
@@ -2783,6 +2784,26 @@ name = "endian-type"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c34f04666d835ff5d62e058c3995147c06f42fe86ff053337632bca83e42702d"
+
+[[package]]
+name = "enum-iterator"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c79a6321a1197d7730510c7e3f6cb80432dfefecb32426de8cea0aa19b4bb8d7"
+dependencies = [
+ "enum-iterator-derive",
+]
+
+[[package]]
+name = "enum-iterator-derive"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e94aa31f7c0dc764f57896dc615ddd76fc13b0d5dca7eb6cc5e018a5a09ec06"
+dependencies = [
+ "proc-macro2 1.0.24",
+ "quote 1.0.9",
+ "syn 1.0.64",
+]
 
 [[package]]
 name = "enum_dispatch"
@@ -4284,6 +4305,7 @@ dependencies = [
  "anyhow",
  "bcs",
  "diem-workspace-hack",
+ "enum-iterator",
  "hex",
  "mirai-annotations",
  "once_cell",
