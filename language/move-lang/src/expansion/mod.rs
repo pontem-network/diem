@@ -6,4 +6,4 @@ pub mod ast;
 mod byte_string;
 mod dependency_ordering;
 mod hex_string;
-pub(crate) mod translate;
+pub mod translate;
