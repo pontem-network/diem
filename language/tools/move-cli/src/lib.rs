@@ -308,13 +308,15 @@ impl OnDiskStateView {
         event_sequence_number: u64,
         event_type: TypeTag,
         event_data: Vec<u8>,
+        caller: Option<ModuleId>,
     ) -> Result<()> {
         let key = EventKey::try_from(event_key)?;
-        self.save_contract_event(ContractEvent::new(
+        self.save_contract_event(ContractEvent::with_caller(
             key,
             event_sequence_number,
             event_type,
             event_data,
+            caller
         ))
     }
 

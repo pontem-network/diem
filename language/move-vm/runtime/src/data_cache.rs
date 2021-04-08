@@ -138,7 +138,7 @@ impl<'r, 'l, R: RemoteCache> TransactionDataCache<'r, 'l, R> {
             let blob = val
                 .simple_serialize(&ty_layout)
                 .ok_or_else(|| PartialVMError::new(StatusCode::INTERNAL_TYPE_ERROR))?;
-            events.push((guid, seq_num, ty_tag, blob))
+            events.push((guid, seq_num, ty_tag, blob, caller))
         }
 
         Ok((
@@ -295,6 +295,6 @@ impl<'r, 'l, C: RemoteCache> DataStore for TransactionDataCache<'r, 'l, C> {
         val: Value,
     ) -> PartialVMResult<()> {
         let ty_layout = self.loader.type_to_type_layout(&ty)?;
-        Ok(self.event_data.push((guid, seq_num, ty, ty_layout, val)))
+        Ok(self.event_data.push((guid, seq_num, ty, ty_layout, val, caller)))
     }
 }
