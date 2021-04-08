@@ -203,7 +203,7 @@ pub const BINARY_SIZE_LIMIT: usize = usize::max_value();
 
 /// A wrapper for the binary vector
 #[derive(Default, Debug)]
-pub(crate) struct BinaryData {
+pub struct BinaryData {
     _binary: Vec<u8>,
 }
 
@@ -272,7 +272,7 @@ impl From<Vec<u8>> for BinaryData {
     }
 }
 
-pub(crate) fn write_u64_as_uleb128(binary: &mut BinaryData, mut val: u64) -> Result<()> {
+pub fn write_u64_as_uleb128(binary: &mut BinaryData, mut val: u64) -> Result<()> {
     loop {
         let cur = val & 0x7f;
         if cur != val {
@@ -361,7 +361,7 @@ pub const VERSION_2: u32 = 2;
 // Mark which version is the latest version
 pub const VERSION_MAX: u32 = VERSION_2;
 
-pub(crate) mod versioned_data {
+pub mod versioned_data {
     use crate::{errors::*, file_format_common::*};
     use move_core_types::vm_status::StatusCode;
     use std::io::{Cursor, Read};
@@ -490,7 +490,7 @@ pub(crate) mod versioned_data {
         }
     }
 }
-pub(crate) use versioned_data::{VersionedBinary, VersionedCursor};
+pub use versioned_data::{VersionedBinary, VersionedCursor};
 
 /// The encoding of the instruction is the serialized form of it, but disregarding the
 /// serialization of the instruction's argument(s).
