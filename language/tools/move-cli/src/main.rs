@@ -534,10 +534,10 @@ fn explain_execution_effects(
     if !events.is_empty() {
         println!("Emitted {:?} events:", events.len());
         // TODO: better event printing
-        for (event_key, event_sequence_number, _event_type, event_data) in events {
+        for (event_key, event_sequence_number, _event_type, event_data, caller) in events {
             println!(
-                "Emitted {:?} as the {}th event to stream {:?}",
-                event_data, event_sequence_number, event_key
+                "Emitted {:?} by module {:?} as the {}th event to stream {:?}",
+                event_data, caller, event_sequence_number, event_key
             )
         }
     }
@@ -619,8 +619,8 @@ fn maybe_commit_effects(
             }
         }
 
-        for (event_key, event_sequence_number, event_type, event_data) in events {
-            state.save_event(&event_key, event_sequence_number, event_type, event_data)?
+        for (event_key, event_sequence_number, event_type, event_data, caller) in events {
+            state.save_event(&event_key, event_sequence_number, event_type, event_data, caller)?
         }
     } else if !(changeset.resources().next().is_none() && events.is_empty()) {
         println!("Discarding changes; re-run without --dry-run if you would like to keep them.")
