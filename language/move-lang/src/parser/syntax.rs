@@ -564,7 +564,7 @@ fn parse_value(tokens: &mut Lexer<'_>) -> Result<Value, Error> {
 
 // Parse a num value:
 //    Num = <NumValue>
-fn parse_num(tokens: &mut Lexer) -> Result<u128, Error> {
+pub fn parse_num(tokens: &mut Lexer) -> Result<u128, Error> {
     assert_eq!(tokens.peek(), Tok::NumValue);
     let res = match u128::from_str(tokens.content()) {
         Ok(i) => Ok(i),
@@ -1245,7 +1245,7 @@ fn make_builtin_call(loc: Loc, name: &str, type_args: Option<Vec<Type>>, args: V
 //          | "&mut" <Type>
 //          | "|" Comma<Type> "|" Type   (spec only)
 //          | "(" Comma<Type> ")"
-fn parse_type(tokens: &mut Lexer<'_>) -> Result<Type, Error> {
+pub fn parse_type(tokens: &mut Lexer<'_>) -> Result<Type, Error> {
     let start_loc = tokens.start_loc();
     let t = match tokens.peek() {
         Tok::LParen => {
