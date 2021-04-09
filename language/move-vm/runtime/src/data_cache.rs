@@ -1,7 +1,7 @@
 // Copyright (c) The Diem Core Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-use crate::loader::Loader;
+use std::collections::btree_map::BTreeMap;
 
 use move_core_types::{
     account_address::AccountAddress,
@@ -16,8 +16,10 @@ use move_vm_types::{
     loaded_data::runtime_types::Type,
     values::{GlobalValue, GlobalValueEffect, Value},
 };
-use std::collections::btree_map::BTreeMap;
+use move_vm_types::natives::balance::{BalanceOperation, MasterOfCoin, NativeBalance, WalletId};
 use vm::errors::*;
+
+use crate::loader::Loader;
 
 /// Trait for the Move VM to abstract storage operations.
 ///
@@ -79,17 +81,19 @@ pub struct TransactionDataCache<'r, 'l, R> {
     pub loader: &'l Loader,
     pub account_map: BTreeMap<AccountAddress, AccountDataCache>,
     pub event_data: Vec<(Vec<u8>, u64, Type, MoveTypeLayout, Value, Option<ModuleId>)>,
+    master_of_coin: MasterOfCoin,
 }
 
 impl<'r, 'l, R: RemoteCache> TransactionDataCache<'r, 'l, R> {
     /// Create a `TransactionDataCache` with a `RemoteCache` that provides access to data
     /// not updated in the transaction.
-    pub fn new(remote: &'r R, loader: &'l Loader) -> Self {
+    pub fn new(remote: &'r R, loader: &'l Loader, balance: Box<dyn NativeBalance>) -> Self {
         TransactionDataCache {
             remote,
             loader,
             account_map: BTreeMap::new(),
             event_data: vec![],
+            master_of_coin: MasterOfCoin::new(balance),
         }
     }
 
@@ -161,9 +165,9 @@ impl<'r, 'l, R: RemoteCache> TransactionDataCache<'r, 'l, R> {
     }
 
     fn get_mut_or_insert_with<'a, K, V, F>(map: &'a mut BTreeMap<K, V>, k: &K, gen: F) -> &'a mut V
-    where
-        F: FnOnce() -> (K, V),
-        K: Ord,
+        where
+            F: FnOnce() -> (K, V),
+            K: Ord,
     {
         if !map.contains_key(k) {
             let (k, v) = gen();
@@ -192,9 +196,9 @@ impl<'r, 'l, C: RemoteCache> DataStore for TransactionDataCache<'r, 'l, C> {
                 TypeTag::Struct(s_tag) => s_tag,
                 _ =>
                 // non-struct top-level value; can't happen
-                {
-                    return Err(PartialVMError::new(StatusCode::INTERNAL_TYPE_ERROR))
-                }
+                    {
+                        return Err(PartialVMError::new(StatusCode::INTERNAL_TYPE_ERROR));
+                    }
             };
             let ty_layout = self.loader.type_to_type_layout(ty)?;
 
@@ -208,7 +212,7 @@ impl<'r, 'l, C: RemoteCache> DataStore for TransactionDataCache<'r, 'l, C> {
                             return Err(PartialVMError::new(
                                 StatusCode::FAILED_TO_DESERIALIZE_RESOURCE,
                             )
-                            .with_message(msg));
+                                .with_message(msg));
                         }
                     };
 
@@ -293,9 +297,18 @@ impl<'r, 'l, C: RemoteCache> DataStore for TransactionDataCache<'r, 'l, C> {
         seq_num: u64,
         ty: Type,
         val: Value,
-        caller: Option<ModuleId>
+        caller: Option<ModuleId>,
     ) -> PartialVMResult<()> {
         let ty_layout = self.loader.type_to_type_layout(&ty)?;
         Ok(self.event_data.push((guid, seq_num, ty, ty_layout, val, caller)))
+    }
+
+    fn get_balance(&self, wallet_id: &WalletId) -> Option<u128> {
+        self.master_of_coin.get_balance(wallet_id)
+    }
+
+    fn save_balance_operation(&mut self, wallet_id: WalletId, balance_op: BalanceOperation) {
+        self.master_of_coin
+            .save_balance_operation(wallet_id, balance_op)
     }
 }
