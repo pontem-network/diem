@@ -28,6 +28,7 @@ use move_core_types::language_storage::{ModuleId, TypeTag};
 
 pub use move_core_types::vm_status::StatusCode;
 pub use vm::errors::PartialVMError;
+use crate::natives::balance::{WalletId, Balance, BalanceOperation};
 
 /// `NativeContext` - Native function context.
 ///
@@ -51,9 +52,14 @@ pub trait NativeContext {
     ) -> PartialVMResult<bool>;
     /// Get the a data layout via the type.
     fn type_to_type_layout(&self, ty: &Type) -> PartialVMResult<Option<MoveTypeLayout>>;
+    /// Get the a data tag via the type.
     fn type_to_type_tag(&self, ty: &Type) -> PartialVMResult<TypeTag>;
     /// Caller module.
     fn caller(&self) -> Option<&ModuleId>;
+    /// Get user Balance.
+    fn get_balance(&self, wallet_id: &WalletId) -> Option<Balance>;
+    /// Save balance operation.
+    fn save_balance_operation(&mut self, wallet_id: WalletId, balance_op: BalanceOperation);
 }
 
 /// Result of a native function execution requires charges for execution cost.

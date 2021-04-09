@@ -38,6 +38,7 @@ use move_vm_runtime::{
 use move_vm_types::gas_schedule::{calculate_intrinsic_gas, zero_cost_schedule, CostStrategy};
 use std::{convert::TryFrom, sync::Arc};
 use vm::errors::Location;
+use move_vm_types::natives::balance::ZeroBalance;
 
 #[derive(Clone)]
 /// A wrapper to make VMRuntime standalone and thread safe.
@@ -431,7 +432,7 @@ impl DiemVMImpl {
     }
 
     pub fn new_session<'r, R: RemoteCache>(&self, r: &'r R) -> Session<'r, '_, R> {
-        self.move_vm.new_session(r)
+        self.move_vm.new_session(r, Box::new(ZeroBalance))
     }
 }
 
@@ -470,7 +471,7 @@ impl<'a> DiemVMInternals<'a> {
         f: impl for<'txn, 'r> FnOnce(Session<'txn, 'r, RemoteStorage<S>>) -> T,
     ) -> T {
         let remote_storage = RemoteStorage::new(state_view);
-        let session = self.move_vm().new_session(&remote_storage);
+        let session = self.move_vm().new_session(&remote_storage, Box::new(ZeroBalance));
         f(session)
     }
 }
