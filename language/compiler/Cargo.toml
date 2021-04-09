@@ -25,3 +25,25 @@ serde_json = "1.0.64"
 
 [features]
 default = []
+diem_address = [
+    "bytecode-verifier/diem_address",
+    "move-ir-types/diem_address",
+    "vm/diem_address",
+    "ir-to-bytecode/diem_address",
+    "bytecode-source-map/diem_address",
+
+]
+dfinance_address = [
+    "bytecode-verifier/dfinance_address",
+    "move-ir-types/dfinance_address",
+    "vm/dfinance_address",
+    "ir-to-bytecode/dfinance_address",
+    "bytecode-source-map/dfinance_address",
+]
+ps_address = [
+    "bytecode-verifier/ps_address",
+    "move-ir-types/ps_address",
+    "vm/ps_address",
+    "ir-to-bytecode/ps_address",
+    "bytecode-source-map/ps_address",
+]

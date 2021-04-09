@@ -1413,6 +1413,7 @@ dependencies = [
  "diem-types",
  "diem-vm",
  "diem-workspace-hack",
+ "errmapgen",
  "ir-to-bytecode-syntax",
  "move-core-types",
  "move-coverage",
@@ -1421,7 +1422,9 @@ dependencies = [
  "move-vm-natives",
  "move-vm-runtime",
  "move-vm-types",
+ "resource-viewer",
  "vm",
+ "vm-genesis",
 ]
 
 [[package]]

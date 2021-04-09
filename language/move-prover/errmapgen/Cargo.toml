@@ -22,3 +22,15 @@ serde = { version = "1.0.124", features = ["derive"] }
 codespan-reporting = "0.8.0"
 move-prover = { path = ".." }
 datatest-stable = { path = "../../../common/datatest-stable" }
+
+[features]
+diem_address = [
+    "move-core-types/diem_address",
+
+]
+dfinance_address = [
+    "move-core-types/dfinance_address",
+]
+ps_address = [
+    "move-core-types/ps_address",
+]

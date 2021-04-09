@@ -47,3 +47,13 @@ harness = true
 [[test]]
 name = "ir_test_coverage"
 harness = true
+[features]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

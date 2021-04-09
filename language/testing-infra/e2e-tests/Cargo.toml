@@ -33,3 +33,14 @@ diem-framework-releases = { path = "../../diem-framework/releases" }
 diem-workspace-hack = { path = "../../../common/workspace-hack" }
 diem-transaction-builder = { path = "../../../sdk/transaction-builder"}
 hex = "0.4.3"
+
+[features]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

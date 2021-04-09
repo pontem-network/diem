@@ -33,3 +33,14 @@ subscription-service = { path = "../../common/subscription-service" }
 diem-config = { path = "../../config", features = ["testing"]}
 netcore = { path = "../netcore", features = ["testing"] }
 rand = "0.8.3"
+
+[features]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

@@ -22,3 +22,14 @@ move-lang = { path = "../../move-lang" }
 move-vm-runtime = { path = "../runtime" }
 move-vm-types = { path = "../types" }
 move-vm-test-utils = { path = "../test-utils" }
+
+[features]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

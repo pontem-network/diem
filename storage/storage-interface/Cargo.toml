@@ -28,3 +28,12 @@ move-core-types = { path = "../../language/move-core/types" }
 [features]
 default = []
 fuzzing = ["diem-types/fuzzing"]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

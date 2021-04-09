@@ -22,3 +22,14 @@ diem-crypto = { path = "../../crypto/crypto" }
 diem-workspace-hack = { path = "../../common/workspace-hack" }
 move-core-types = { path = "../../language/move-core/types" }
 diem-transaction-builder = { path = "../../sdk/transaction-builder" }
+
+[features]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

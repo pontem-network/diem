@@ -16,16 +16,40 @@ impl AccountAddress {
         Self(address)
     }
 
+    #[cfg(any(
+        all(feature = "ps_address", feature = "dfinance_address"),
+        all(feature = "ps_address", feature = "diem_address"),
+        all(feature = "dfinance_address", feature = "diem_address"),
+    ))]
+    compile_error!("These features are mutually exclusive and cannot be used together");
+
     /// The number of bytes in an address.
+    #[cfg(feature = "dfinance_address")]
     pub const LENGTH: usize = 20;
+
+    /// The number of bytes in an address.
+    #[cfg(feature = "diem_address")]
+    pub const LENGTH: usize = 16;
+
+    /// The number of bytes in an address.
+    #[cfg(feature = "ps_address")]
+    pub const LENGTH: usize = 32;
 
     /// Hex address: 0x0
     pub const ZERO: Self = Self([0u8; Self::LENGTH]);
 
     pub fn random() -> Self {
         let mut rng = OsRng;
-        let buf: [u8; Self::LENGTH] = rng.gen();
-        Self(buf)
+
+        #[cfg(any(feature = "dfinance_address", feature = "diem_address"))] {
+            let buf: [u8; Self::LENGTH] = rng.gen();
+            Self(buf)
+        }
+        #[cfg(feature = "ps_address")] {
+            let mut buf = [0u8; Self::LENGTH];
+            buf[0..32].copy_from_slice(&rng.gen::<[u8; 32]>());
+            Self(buf)
+        }
     }
 
     pub fn short_str_lossless(&self) -> String {
@@ -208,8 +232,8 @@ impl FromStr for AccountAddress {
 
 impl<'de> Deserialize<'de> for AccountAddress {
     fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
+        where
+            D: Deserializer<'de>,
     {
         if deserializer.is_human_readable() {
             let s = <String>::deserialize(deserializer)?;
@@ -230,8 +254,8 @@ impl<'de> Deserialize<'de> for AccountAddress {
 
 impl Serialize for AccountAddress {
     fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
-    where
-        S: Serializer,
+        where
+            S: Serializer,
     {
         if serializer.is_human_readable() {
             self.to_hex().serialize(serializer)

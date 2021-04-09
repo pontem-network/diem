@@ -35,3 +35,14 @@ itertools = "0.10.0"
 difference = "2.0.0"
 term_size = "0.3.2"
 vm-genesis = { path = "../../tools/vm-genesis" }
+
+[features]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

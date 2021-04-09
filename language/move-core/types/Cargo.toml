@@ -33,3 +33,6 @@ diem-workspace-hack = { path = "../../../common/workspace-hack" }
 [features]
 default = []
 fuzzing = ["proptest", "proptest-derive"]
+diem_address = []
+dfinance_address = []
+ps_address = []

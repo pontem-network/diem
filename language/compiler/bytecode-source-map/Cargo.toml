@@ -19,3 +19,18 @@ serde = { version = "1.0.124", default-features = false }
 
 [features]
 default = []
+diem_address = [
+    "move-core-types/diem_address",
+    "move-ir-types/diem_address",
+    "vm/diem_address",
+]
+dfinance_address = [
+    "move-core-types/dfinance_address",
+    "move-ir-types/dfinance_address",
+    "vm/dfinance_address",
+]
+ps_address = [
+    "move-core-types/ps_address",
+    "move-ir-types/ps_address",
+    "vm/ps_address",
+]

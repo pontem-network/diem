@@ -28,3 +28,12 @@ byteorder = "1.3.4"
 [features]
 default = []
 debug_module = []
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]

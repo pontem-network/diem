@@ -19,3 +19,15 @@ diem-workspace-hack = { path = "../../../../common/workspace-hack" }
 
 [features]
 default = []
+diem_address = [
+    "move-core-types/diem_address",
+    "move-ir-types/diem_address",
+]
+dfinance_address = [
+    "move-core-types/dfinance_address",
+    "move-ir-types/dfinance_address",
+]
+ps_address = [
+    "move-core-types/ps_address",
+    "move-ir-types/ps_address",
+]

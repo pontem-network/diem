@@ -18,3 +18,14 @@ diem-workspace-hack = { path = "../../../common/workspace-hack" }
 move-vm-runtime = { path = "../runtime" }
 move-core-types = {path = "../../move-core/types" }
 vm = { path = "../../vm" }
+
+[features]
+diem_address = [
+    "move-core-types/diem_address"
+]
+dfinance_address = [
+    "move-core-types/dfinance_address"
+]
+ps_address = [
+    "move-core-types/ps_address"
+]
