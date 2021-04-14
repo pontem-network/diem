@@ -20,13 +20,14 @@ pub mod unique_set;
 // Address
 //**************************************************************************************************
 
-pub const ADDRESS_LENGTH: usize = 16;
+pub const ADDRESS_LENGTH: usize = 32;
 
 #[derive(Ord, PartialOrd, Eq, PartialEq, Hash, Default, Clone, Copy)]
 pub struct Address([u8; ADDRESS_LENGTH]);
 
 impl Address {
     pub const DIEM_CORE: Address = Address::new([
+        0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8,
         0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 0u8, 1u8,
     ]);
 
