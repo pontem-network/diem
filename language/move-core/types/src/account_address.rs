@@ -17,7 +17,7 @@ impl AccountAddress {
     }
 
     /// The number of bytes in an address.
-    pub const LENGTH: usize = 20;
+    pub const LENGTH: usize = 32;
 
     /// Hex address: 0x0
     pub const ZERO: Self = Self([0u8; Self::LENGTH]);
