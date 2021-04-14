@@ -41,13 +41,13 @@ pub fn native_print(
                     name: Identifier::new("U256").unwrap(),
                     type_params: vec![],
                 }) {
-                    if let Container::StructC(fields) = r.read_ref()?.value_as::<Container>()? {
+                    if let Container::Struct(fields) = r.read_ref()?.value_as::<Container>()? {
                         if let Some(ValueImpl::Container(Container::VecU8(r))) = fields.borrow().get(0) {
                             let cell = r.as_ref().clone();
                             println!("[debug] {}", U256::from_little_endian(&cell.into_inner()));
                         }
                     }
-                    return Ok(NativeResult::ok(ONE_GAS_UNIT, vec![]));
+                    return Ok(NativeResult::ok(ONE_GAS_UNIT, smallvec![]));
                 }
             }
 

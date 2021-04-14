@@ -46,7 +46,6 @@ use once_cell::sync::Lazy;
 use rand::prelude::*;
 use transaction_builder::encode_create_designated_dealer_script_function;
 use vm::CompiledModule;
-use move_vm_types::natives::balance::ZeroBalance;
 
 // The seed is arbitrarily picked to produce a consistent key. XXX make this more formal?
 const GENESIS_SEED: [u8; 32] = [42; 32];
@@ -112,7 +111,7 @@ pub fn encode_genesis_change_set(
     let data_cache = StateViewCache::new(&state_view);
 
     let move_vm = MoveVM::new();
-    let mut session = move_vm.new_session(&data_cache, Box::new(ZeroBalance));
+    let mut session = move_vm.new_session(&data_cache);
     let log_context = NoContextLog::new();
 
     let xdx_ty = TypeTag::Struct(StructTag {
@@ -151,7 +150,7 @@ pub fn encode_genesis_change_set(
 
     let state_view = GenesisStateView::new();
     let data_cache = StateViewCache::new(&state_view);
-    let mut session = move_vm.new_session(&data_cache, Box::new(ZeroBalance));
+    let mut session = move_vm.new_session(&data_cache);
     publish_stdlib(&mut session, &log_context, stdlib_module_tuples);
     let (changeset2, events2) = session.finish().unwrap();
 
