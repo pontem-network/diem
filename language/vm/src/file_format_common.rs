@@ -365,6 +365,8 @@ pub mod versioned_data {
     use crate::{errors::*, file_format_common::*};
     use move_core_types::vm_status::StatusCode;
     use std::io::{Cursor, Read};
+    use anyhow::Result;
+
     pub struct VersionedBinary<'a> {
         version: u32,
         binary: &'a [u8],
@@ -436,6 +438,10 @@ pub mod versioned_data {
 
         pub fn position(&self) -> u64 {
             self.cursor.position()
+        }
+
+        pub fn set_position(&mut self, pos: u64) {
+            self.cursor.set_position(pos)
         }
 
         #[allow(dead_code)]
