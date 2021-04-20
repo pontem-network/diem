@@ -757,7 +757,7 @@ impl Loader {
     // Helpers for loading and verification
     //
 
-    fn load_type(
+    pub fn load_type(
         &self,
         type_tag: &TypeTag,
         data_store: &mut impl DataStore,
@@ -1751,7 +1751,7 @@ impl TypeCache {
 const VALUE_DEPTH_MAX: usize = 256;
 
 impl Loader {
-    fn struct_gidx_to_type_tag(&self, gidx: usize, ty_args: &[Type]) -> PartialVMResult<StructTag> {
+    pub fn struct_gidx_to_type_tag(&self, gidx: usize, ty_args: &[Type]) -> PartialVMResult<StructTag> {
         if let Some(struct_map) = self.type_cache.lock().structs.get(&gidx) {
             if let Some(struct_info) = struct_map.get(ty_args) {
                 if let Some(struct_tag) = &struct_info.struct_tag {
@@ -1784,7 +1784,7 @@ impl Loader {
         Ok(struct_tag)
     }
 
-    fn type_to_type_tag_impl(&self, ty: &Type) -> PartialVMResult<TypeTag> {
+    pub fn type_to_type_tag_impl(&self, ty: &Type) -> PartialVMResult<TypeTag> {
         Ok(match ty {
             Type::Bool => TypeTag::Bool,
             Type::U8 => TypeTag::U8,
@@ -1806,7 +1806,7 @@ impl Loader {
         })
     }
 
-    fn struct_gidx_to_type_layout(
+    pub fn struct_gidx_to_type_layout(
         &self,
         gidx: usize,
         ty_args: &[Type],
@@ -1844,7 +1844,7 @@ impl Loader {
         Ok(struct_layout)
     }
 
-    fn type_to_type_layout_impl(&self, ty: &Type, depth: usize) -> PartialVMResult<MoveTypeLayout> {
+    pub fn type_to_type_layout_impl(&self, ty: &Type, depth: usize) -> PartialVMResult<MoveTypeLayout> {
         if depth > VALUE_DEPTH_MAX {
             return Err(PartialVMError::new(StatusCode::VM_MAX_VALUE_DEPTH_REACHED));
         }
@@ -1873,10 +1873,10 @@ impl Loader {
         })
     }
 
-    pub(crate) fn type_to_type_tag(&self, ty: &Type) -> PartialVMResult<TypeTag> {
+    pub fn type_to_type_tag(&self, ty: &Type) -> PartialVMResult<TypeTag> {
         self.type_to_type_tag_impl(ty)
     }
-    pub(crate) fn type_to_type_layout(&self, ty: &Type) -> PartialVMResult<MoveTypeLayout> {
+    pub fn type_to_type_layout(&self, ty: &Type) -> PartialVMResult<MoveTypeLayout> {
         self.type_to_type_layout_impl(ty, 1)
     }
 }
