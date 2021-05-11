@@ -81,8 +81,8 @@ impl ResourceKey {
 #[cfg_attr(any(test, feature = "fuzzing"), derive(Arbitrary))]
 #[cfg_attr(any(test, feature = "fuzzing"), proptest(no_params))]
 pub struct ModuleId {
-    address: AccountAddress,
-    name: Identifier,
+    pub address: AccountAddress,
+    pub name: Identifier,
 }
 
 impl From<ModuleId> for (AccountAddress, Identifier) {
