@@ -116,9 +116,9 @@ impl NativeFunction {
             (&CORE_CODE_ADDRESS, "U256", "sub") => U256Sub,
             (&CORE_CODE_ADDRESS, "U256", "add") => U256Add,
 
-            (&CORE_CODE_ADDRESS, "Account", "deposit_native") => DepositFromNative,
-            (&CORE_CODE_ADDRESS, "Account", "withdraw_native") => WithdrawToNative,
-            (&CORE_CODE_ADDRESS, "Account", "get_native_balance") => GetNativeBalance,
+            (&CORE_CODE_ADDRESS, "Pontem", "deposit_native") => DepositFromNative,
+            (&CORE_CODE_ADDRESS, "Pontem", "withdraw_native") => WithdrawToNative,
+            (&CORE_CODE_ADDRESS, "Pontem", "get_native_balance") => GetNativeBalance,
             _ => return None,
         })
     }
