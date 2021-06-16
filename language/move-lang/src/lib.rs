@@ -14,14 +14,12 @@ pub mod expansion;
 pub mod hlir;
 pub mod interface_generator;
 pub mod ir_translation;
-pub mod name_pool;
 pub mod naming;
 pub mod parser;
 pub mod shared;
 pub mod to_bytecode;
 pub mod typing;
 
-use crate::name_pool::ConstPool;
 use anyhow::anyhow;
 use codespan::{ByteIndex, Span};
 use compiled_unit::CompiledUnit;
@@ -687,6 +685,11 @@ fn run(
 // Parsing
 //**************************************************************************************************
 
+/// Prolongs lifetime of `&str` to `'static`, effectively leaking memory.
+pub fn leak_str(s: &str) -> &'static str {
+    Box::leak(Box::new(s.to_owned()))
+}
+
 pub fn parse_program(
     targets: &[String],
     deps: &[String],
@@ -696,11 +699,11 @@ pub fn parse_program(
 )> {
     let targets = find_move_filenames(targets, true)?
         .iter()
-        .map(|s| ConstPool::push(s))
+        .map(|s| leak_str(s))
         .collect::<Vec<&'static str>>();
     let deps = find_move_filenames(deps, true)?
         .iter()
-        .map(|s| ConstPool::push(s))
+        .map(|s| leak_str(s))
         .collect::<Vec<&'static str>>();
     check_targets_deps_dont_intersect(&targets, &deps)?;
     let mut files: FilesSourceText = HashMap::new();
