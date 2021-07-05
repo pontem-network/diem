@@ -8,6 +8,7 @@ use move_lang::{
     shared::*,
 };
 use structopt::*;
+use move_lang::preprocessor::NoOp;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "Move Build", about = "Compile Move source to Move bytecode.")]
@@ -77,6 +78,7 @@ pub fn main() -> anyhow::Result<()> {
         sender,
         Some(interface_files_dir),
         !no_shadow,
+        &mut NoOp,
     )?;
     move_lang::output_compiled_units(emit_source_map, files, compiled_units, &out_dir)
 }

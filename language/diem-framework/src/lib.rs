@@ -16,6 +16,7 @@ use std::{
 use vm::{access::ModuleAccess, file_format::CompiledModule};
 
 pub use move_stdlib::{COMPILED_EXTENSION, ERROR_DESC_EXTENSION, MOVE_EXTENSION};
+use move_lang::preprocessor::NoOp;
 
 pub mod release;
 
@@ -92,6 +93,7 @@ pub(crate) fn build_stdlib() -> BTreeMap<String, CompiledModule> {
         Some(Address::DIEM_CORE),
         None,
         false,
+        &mut NoOp,
     )
     .unwrap();
     let mut modules = BTreeMap::new();

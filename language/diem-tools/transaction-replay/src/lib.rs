@@ -29,6 +29,7 @@ use std::{
     path::{Path, PathBuf},
 };
 use vm::{errors::VMResult, file_format::CompiledModule};
+use move_lang::preprocessor::NoOp;
 
 #[cfg(test)]
 mod unit_tests;
@@ -373,6 +374,7 @@ fn compile_move_script(file_path: &str, sender: AccountAddress) -> Result<Vec<u8
         sender_opt,
         None,
         false,
+        &mut NoOp,
     )?;
     let unit = match units_or_errors {
         Err(errors) => {

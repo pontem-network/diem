@@ -12,6 +12,7 @@ use move_lang::compiled_unit::CompiledUnit;
 use serde::Serialize;
 use std::{collections::HashMap, io::Write, path::PathBuf};
 use tempfile::NamedTempFile;
+use move_lang::preprocessor::NoOp;
 
 /// The relative path to the scripts templates
 pub const SCRIPTS_DIR_PATH: &str = "templates";
@@ -23,6 +24,7 @@ pub fn compile_script(source_file_str: String) -> Vec<u8> {
         Some(move_lang::shared::Address::DIEM_CORE),
         None,
         false,
+        &mut NoOp,
     )
     .unwrap();
     let mut script_bytes = vec![];

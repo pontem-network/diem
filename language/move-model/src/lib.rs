@@ -29,6 +29,7 @@ use crate::{
     builder::model_builder::ModelBuilder,
     model::{FunId, FunctionData, GlobalEnv, Loc, ModuleData, ModuleEnv, ModuleId, StructId},
 };
+use move_lang::preprocessor::SourceProcessor;
 
 pub mod ast;
 mod builder;
@@ -46,6 +47,7 @@ pub fn run_model_builder(
     target_sources: Vec<String>,
     other_sources: Vec<String>,
     address_opt: Option<&str>,
+    preprocessor: &mut dyn SourceProcessor,
 ) -> anyhow::Result<GlobalEnv> {
     let address_opt = address_opt
         .map(Address::parse_str)
@@ -56,7 +58,7 @@ pub fn run_model_builder(
     all_sources.extend(other_sources.clone());
     let mut env = GlobalEnv::new();
     // Parse the program
-    let (files, pprog_and_comments_res) = move_parse(&all_sources, &[], address_opt, None)?;
+    let (files, pprog_and_comments_res) = move_parse(&all_sources, &[], address_opt, None, preprocessor)?;
     for fname in files.keys().sorted() {
         let fsrc = &files[fname];
         env.add_source(fname, fsrc, other_sources.contains(&fname.to_string()));

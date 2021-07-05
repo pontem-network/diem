@@ -8,6 +8,7 @@ use move_lang::{
     shared::*,
 };
 use structopt::*;
+use move_lang::preprocessor::NoOp;
 
 #[derive(Debug, StructOpt)]
 #[structopt(
@@ -70,6 +71,7 @@ pub fn main() -> anyhow::Result<()> {
         sender,
         out_dir,
         !no_shadow,
+        &mut NoOp
     )?;
     Ok(())
 }

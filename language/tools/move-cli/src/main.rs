@@ -36,6 +36,7 @@ use std::{
     path::{Path, PathBuf},
 };
 use structopt::StructOpt;
+use move_lang::preprocessor::NoOp;
 
 #[derive(StructOpt)]
 #[structopt(
@@ -240,6 +241,7 @@ fn check(state: OnDiskStateView, republish: bool, files: &[String], verbose: boo
         None,
         None,
         republish,
+        &mut NoOp,
     )?;
     Ok(())
 }
@@ -255,12 +257,14 @@ fn publish(
         println!("Compiling Move modules...")
     }
 
-    let (_, compiled_units) = move_lang::move_compile_and_report(
+    let (_, compiled_units) =
+        move_lang::move_compile_and_report(
         files,
         &[state.interface_files_dir()?],
         None,
         None,
         republish,
+        &mut NoOp,
     )?;
 
     let num_modules = compiled_units
@@ -364,6 +368,7 @@ fn run(
             None,
             None,
             false,
+            &mut NoOp,
         )?;
 
         let mut script_opt = None;

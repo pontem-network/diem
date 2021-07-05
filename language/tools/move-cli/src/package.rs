@@ -18,6 +18,7 @@ use move_lang::{
 };
 use std::path::PathBuf;
 use vm::file_format::CompiledModule;
+use move_lang::preprocessor::NoOp;
 
 /// Directory name for the package source files under package/<name>
 const PKG_SOURCE_DIR: &str = "source_files";
@@ -159,6 +160,7 @@ impl MovePackage {
                 None,
                 None,
                 false,
+                &mut NoOp,
             )?;
 
             // save modules and ignore scripts
