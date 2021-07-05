@@ -19,6 +19,7 @@ pub mod parser;
 pub mod shared;
 pub mod to_bytecode;
 pub mod typing;
+pub mod preprocessor;
 
 use anyhow::anyhow;
 use codespan::{ByteIndex, Span};
@@ -37,6 +38,7 @@ use std::{
     str::Chars,
 };
 use tempfile::NamedTempFile;
+use crate::preprocessor::Preprocessor;
 
 pub const MOVE_EXTENSION: &str = "move";
 pub const MOVE_COMPILED_EXTENSION: &str = "mv";
@@ -107,9 +109,10 @@ pub fn move_check(
     sender_opt: Option<Address>,
     interface_files_dir_opt: Option<String>,
     sources_shadow_deps: bool,
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<(FilesSourceText, Result<(), Errors>)> {
     let (files, pprog_and_comments_res) =
-        move_parse(targets, deps, sender_opt, interface_files_dir_opt)?;
+        move_parse(targets, deps, sender_opt, interface_files_dir_opt, preprocessor)?;
     let (_comments, sender_opt, pprog) = match pprog_and_comments_res {
         Err(errors) => return Ok((files, Err(errors))),
         Ok(res) => res,
@@ -137,6 +140,7 @@ pub fn move_check_and_report(
     sender_opt: Option<Address>,
     interface_files_dir_opt: Option<String>,
     sources_shadow_deps: bool,
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<FilesSourceText> {
     let (files, errors_result) = move_check(
         targets,
@@ -144,6 +148,7 @@ pub fn move_check_and_report(
         sender_opt,
         interface_files_dir_opt,
         sources_shadow_deps,
+        preprocessor,
     )?;
     unwrap_or_report_errors!(files, errors_result);
     Ok(files)
@@ -163,9 +168,10 @@ pub fn move_compile(
     sender_opt: Option<Address>,
     interface_files_dir_opt: Option<String>,
     sources_shadow_deps: bool,
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<(FilesSourceText, Result<Vec<CompiledUnit>, Errors>)> {
     let (files, pprog_and_comments_res) =
-        move_parse(targets, deps, sender_opt, interface_files_dir_opt)?;
+        move_parse(targets, deps, sender_opt, interface_files_dir_opt, preprocessor)?;
     let (_comments, sender_opt, pprog) = match pprog_and_comments_res {
         Err(errors) => return Ok((files, Err(errors))),
         Ok(res) => res,
@@ -196,6 +202,7 @@ pub fn move_compile_and_report(
     sender_opt: Option<Address>,
     interface_files_dir_opt: Option<String>,
     sources_shadow_deps: bool,
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<(FilesSourceText, Vec<CompiledUnit>)> {
     let (files, units_res) = move_compile(
         targets,
@@ -203,6 +210,7 @@ pub fn move_compile_and_report(
         sender_opt,
         interface_files_dir_opt,
         sources_shadow_deps,
+        preprocessor
     )?;
     let units = unwrap_or_report_errors!(files, units_res);
     Ok((files, units))
@@ -215,13 +223,14 @@ pub fn move_parse(
     deps: &[String],
     sender_opt: Option<Address>,
     interface_files_dir_opt: Option<String>,
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<(
     FilesSourceText,
     Result<(CommentMap, Option<Address>, parser::ast::Program), Errors>,
 )> {
     let mut deps = deps.to_vec();
     generate_interface_files_for_deps(&mut deps, interface_files_dir_opt)?;
-    let (files, pprog_and_comments_res) = parse_program(targets, &deps)?;
+    let (files, pprog_and_comments_res) = parse_program(targets, &deps, preprocessor)?;
     let result = pprog_and_comments_res.map(|(pprog, comments)| (comments, sender_opt, pprog));
     Ok((files, result))
 }
@@ -233,9 +242,10 @@ pub fn move_construct_pre_compiled_lib(
     sender_opt: Option<Address>,
     interface_files_dir_opt: Option<String>,
     sources_shadow_deps: bool,
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<(FilesSourceText, Result<FullyCompiledProgram, Errors>)> {
     let (files, pprog_and_comments_res) =
-        move_parse(&[], deps, sender_opt, interface_files_dir_opt)?;
+        move_parse(&[], deps, sender_opt, interface_files_dir_opt, preprocessor)?;
     let (_comments, sender_opt, pprog) = match pprog_and_comments_res {
         Err(errors) => return Ok((files, Err(errors))),
         Ok(res) => res,
@@ -688,6 +698,7 @@ fn run(
 fn parse_program(
     targets: &[String],
     deps: &[String],
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<(
     FilesSourceText,
     Result<(parser::ast::Program, CommentMap), Errors>,
@@ -708,14 +719,14 @@ fn parse_program(
     let mut errors: Errors = Vec::new();
 
     for fname in targets {
-        let (defs, comments, mut es) = parse_file(&mut files, fname)?;
+        let (defs, comments, mut es) = parse_file(&mut files, fname, preprocessor)?;
         source_definitions.extend(defs);
         source_comments.insert(fname, comments);
         errors.append(&mut es);
     }
 
     for fname in deps {
-        let (defs, _, mut es) = parse_file(&mut files, fname)?;
+        let (defs, _, mut es) = parse_file(&mut files, fname, preprocessor)?;
         lib_definitions.extend(defs);
         errors.append(&mut es);
     }
@@ -820,12 +831,17 @@ pub fn leak_str(s: &str) -> &'static str {
 fn parse_file(
     files: &mut FilesSourceText,
     fname: &'static str,
+    preprocessor: &mut Option<Preprocessor>,
 ) -> anyhow::Result<(Vec<parser::ast::Definition>, MatchedFileCommentMap, Errors)> {
     let mut errors: Errors = Vec::new();
     let mut f = File::open(fname)
         .map_err(|err| std::io::Error::new(err.kind(), format!("{}: {}", err, fname)))?;
     let mut source_buffer = String::new();
     f.read_to_string(&mut source_buffer)?;
+    if let Some(preprocessor) = preprocessor.as_mut() {
+        source_buffer = preprocessor.process(fname, source_buffer);
+    }
+
     let (no_comments_buffer, comment_map) = match strip_comments_and_verify(fname, &source_buffer) {
         Err(errs) => {
             errors.extend(errs.into_iter());
