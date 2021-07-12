@@ -831,7 +831,7 @@ pub fn find_filenames<Predicate: FnMut(&Path) -> bool>(
     Ok(result)
 }
 
-fn parse_file(
+pub fn parse_file(
     files: &mut FilesSourceText,
     fname: &'static str,
     preprocessor: &mut dyn SourceProcessor,
